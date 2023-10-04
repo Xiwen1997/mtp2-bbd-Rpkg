@@ -24,7 +24,7 @@ library(mtp2bbd)
 
 We first generate the sample covariance matrix from a underlying BA graph
 
-```{r echo=TRUE, message=FALSE, warning=FALSE, cache=TRUE}
+```{r echo=TRUE, message=FALSE, warning=FALSE}
 library(igraph) 
 p <- 500 # problem dimension
 
@@ -49,7 +49,7 @@ S <- cov(X)
 
 Next, we compute the regurization matrix as follows:
 
-```{r echo=TRUE, message=FALSE, warning=FALSE, cache=TRUE}
+```{r echo=TRUE, message=FALSE, warning=FALSE}
 # Compute the regularization matrix
 Theta0_mat <- matrix(0, nrow = p, ncol = p)
 for (i in 1:p) {
@@ -79,11 +79,11 @@ where $\bm{S}$ is the sample covariance matrix, $\Lambda_{ij}\geq 0$ are the reg
 	\mathcal{M}^{p}=\left\{ \boldsymbol{\Theta}\in \mathbb{S}^p \left|\boldsymbol{\Theta}\succ\mathbf{0}\text{ and }\Theta_{ij}\leq0,\forall i\neq j\right.\right\} .
 \]
 
-```{r echo=TRUE, message=FALSE, warning=FALSE, cache=TRUE}
+```{r echo=TRUE, message=FALSE, warning=FALSE}
 fpn_res <- solver_fpn(S, Lambda)
 ```
 
-```{r echo=TRUE, message=FALSE, warning=FALSE, cache=TRUE}
+```{r echo=TRUE, message=FALSE, warning=FALSE}
 str(fpn_res)
 ```
 
@@ -91,11 +91,11 @@ str(fpn_res)
 
 When the thresholded graph is sparse, we can accelerate the convergence via bridge-block decomposition. 
 
-```{r echo=TRUE, message=FALSE, warning=FALSE, cache=TRUE}
+```{r echo=TRUE, message=FALSE, warning=FALSE}
 bbd_res <- solver_bbd(S, Lambda) 
 ```
 
-```{r echo=TRUE, message=FALSE, warning=FALSE, cache=TRUE}
+```{r echo=TRUE, message=FALSE, warning=FALSE}
 str(bbd_res)
 print(bbd_res$time)
 ```
