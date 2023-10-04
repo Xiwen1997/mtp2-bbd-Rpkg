@@ -1,0 +1,101 @@
+---
+title: "Learning Large-Scale MTP$_2$ Gaussian Graphical Models via Bridge-Block Decomposition"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Learning MTP2 GGMs}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignette illustrates how to learn large-scale MTP$_2$ Gaussian graphical models via bridge-block decomposition.
+
+```{r setup}
+library(mtp2bbd)
+```
+
+## Data Generation
+
+We first generate the sample covariance matrix from a underlying BA graph
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, cache=TRUE}
+library(igraph) 
+p <- 500 # problem dimension
+
+# Build a BA graph
+BA_graph <- barabasi.game(p,  directed = FALSE)
+
+# Generate data matrix, if you've already obtained sample covariance
+# matrix, please skip this step
+
+adjacency_matrix <- as_adjacency_matrix(BA_graph,  type = c("both"))
+max_eig          <- eigen(adjacency_matrix)$values[1]
+A                <- 1.05*max_eig*diag(p) - adjacency_matrix
+inv_A            <- solve(A)
+D                <- diag(sqrt(diag(inv_A)))
+Mtrue            <- D %*% A %*% D
+Ratio            <- 5
+X                <- MASS::mvrnorm(Ratio * p , mu = rep(0, p), Sigma = solve(Mtrue))
+ 
+# Compute the sample covariance matrix
+S <- cov(X) 
+```
+
+Next, we compute the regurization matrix as follows:
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, cache=TRUE}
+# Compute the regularization matrix
+Theta0_mat <- matrix(0, nrow = p, ncol = p)
+for (i in 1:p) {
+  for (j in 1:p) {
+    if (S[i, j] > 0 && i != j) {
+      Theta0_mat[i, j] <- -S[i, j] / (S[i, i] * S[j, j] - S[i, j] * S[i, j])
+    }
+  }
+}
+
+chi          <- 0.02
+Lambda       <- chi / (abs(Theta0_mat) + 0.0001)
+diag(Lambda) <- 0
+```
+
+## Fast Projected Newton-like Algorithm
+
+The following optimization problem can be solved via FPN algorithm
+
+\[ 
+	\begin{array}{ll}
+		\underset{\boldsymbol{\Theta}\in\mathcal{M}^p}{\mathsf{minimize}} & -\log\det\left(\boldsymbol{\Theta}\right)+\left\langle \boldsymbol{\Theta},\mathbf{S}\right\rangle +\sum_{i\neq j}\Lambda_{ij}\left|\Theta_{ij}\right|,
+	\end{array} 
+\]
+where $\bm{S}$ is the sample covariance matrix, $\Lambda_{ij}\geq 0$ are the regularization coefficients, the objective is to minimize the negative log-likelihood of the data subject to a weighted $\ell_1$-norm penalty on the precision matrix, and $\mathcal{M}^p$ refers to a set of $M$-matrices with dimension $p$, i.e.,
+\[ 
+	\mathcal{M}^{p}=\left\{ \boldsymbol{\Theta}\in \mathbb{S}^p \left|\boldsymbol{\Theta}\succ\mathbf{0}\text{ and }\Theta_{ij}\leq0,\forall i\neq j\right.\right\} .
+\]
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, cache=TRUE}
+fpn_res <- solver_fpn(S, Lambda)
+```
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, cache=TRUE}
+str(fpn_res)
+```
+
+## Bridge-block decomposition approach
+
+When the thresholded graph is sparse, we can accelerate the convergence via bridge-block decomposition. 
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, cache=TRUE}
+bbd_res <- solver_bbd(S, Lambda) 
+```
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, cache=TRUE}
+str(bbd_res)
+print(bbd_res$time)
+```

@@ -1,0 +1,26 @@
+Package: mtp2bbd
+Type: Package
+Title: Fast projected Newton-like algorithm and brigde-block decomposition approach for precision matrix estimation under nonnegative partial correlations
+Version: 0.1.0
+Author: Xiwen Wang, Jiaxi Ying, and Daniel P. Palomar
+Maintainer: The package maintainer <yourself@somewhere.net>
+Description: The package implements the fast projected Newton-like algorithm together with a brigde-block decomposition approach for precision matrix estimation under nonnegative partial correlations. The package is based on the papers: 
+    X. Wang, J. Ying, and D. P. Palomar, ‘Learning Large-Scale MTP2 Gaussian Graphical Models via Bridge-Block Decomposition,’ accepted in Neural Information Processing Systems (NeurIPS), New Orleans, LA, USA, Dec. 2023.
+    J.-F. Cai, J. V. de Miranda Cardoso, D. P. Palomar, and J. Ying, "Fast Projected Newton-like Method for Precision Matrix Estimation under Total Positivity", accepted in Neural Information Processing Systems (NeurIPS), New Orleans, LA, USA, Dec. 2023.    
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.2.3
+Imports: 
+    igraph,
+    MASS
+Suggests: 
+    rmarkdown,
+    R.rsp,
+    knitr,
+    testthat (>= 3.0.0)
+VignetteBuilder:
+    knitr,
+    rmarkdown,
+    R.rsp
+Config/testthat/edition: 3
