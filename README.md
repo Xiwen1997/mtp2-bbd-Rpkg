@@ -1,5 +1,6 @@
 # mtp2-bbd-Rpkg
 R implementation on how to use bridge-block decomposition to acclerate the learning of large-scale sparse MTP2 Gaussian graphical models, formulated as
+
 $$
 \mathsf{minimize}  -\log\det\left(\boldsymbol{\Theta}\right)+\left\langle \boldsymbol{\Theta},\mathbf{S}\right\rangle +\sum_{i\neq j}\Lambda_{ij}\left|\Theta_{ij}\right|, 
 $$
