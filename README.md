@@ -30,6 +30,22 @@ library(devtools)
 devtools::install_github("Xiwen1997/mtp2-bbd-Rpkg")
 ```
 
+# Simple Usage
+
+Use fast projected Newton-like method:
+
+```
+fpn_res <- solver_fpn(S, Lambda) 
+```
+
+Use bridge-block decomposition approach:
+
+```r
+bbd_res <- solver_bbd(S, Lambda) 
+```
+
+where S is the sample covariance matrix and Lambda is the regularization matrix. 
+
 # References
 
 [1] Xiwen Wang, Jiaxi Ying, and Daniel P. Palomar, 'Learning Large-Scale MTP2 Gaussian Graphical Models via Bridge-Block Decomposition,' accepted in Neural Information Processing Systems (NeurIPS), New Orleans, LA, USA, Dec. 2023.
